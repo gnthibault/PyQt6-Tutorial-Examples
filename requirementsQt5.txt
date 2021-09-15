@@ -1,4 +1,4 @@
 #pip install --upgrade pip
 PyOpenGL==3.1.5
 PyQt5==5.15.1
-PyQt5-3d==5.15.1
+PyQt3d==5.15.1

@@ -4,25 +4,22 @@ This is a Python port of Qt 3D: Simple C++ Example code
 https://doc.qt.io/qt-5.10/qt3d-simple-cpp-example.html
 Tested on
 Anaconda Python 3.6
-pip install PyQt6 (Version 5.10)
+pip install PyQt5 (Version 5.10)
 """
 
-# Launch with
-# QT_QPA_PLATFORM=vnc:mode=websocket python ./test.py
-# QT_QPA_PLATFORM=vnc:size=800x600:addr=0.0.0.0:mode=websocket python ./test.py
-# http://localhost:5900
-# QT_QPA_PLATFORM=webgl:port=8998 python ./test.py 
-#kill with
-#kill -9 $(netstat -laputen 2>/dev/null | grep 8998 | grep python | awk '{print $9}' | awk  -F  "/" '{print $1}')
-
 import sys
-#from OpenGL import GL
+from OpenGL import GL
 from PyQt5 import QtCore
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.Qt3DCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.Qt3DExtras import *
+
+from PyQt5.QtQml import QQmlApplicationEngine
+from PyQt5.QtGui import QGuiApplication
+from PyQt5.QtQuick import QQuickView
+from PyQt5.QtCore import QUrl
 
 
 class OrbitTransformController(QObject):
@@ -79,6 +76,8 @@ class OrbitTransformController(QObject):
 def createScene():
     # root
     rootEntity = QEntity()
+    return rootEntity
+
     material = QPhongMaterial(rootEntity)
 
     # torus
@@ -122,19 +121,33 @@ def createScene():
 
     return rootEntity
 
-# container = QWidget.createWindowContainer(view)
-# container.show()
 
-app = QApplication(sys.argv)
-view = Qt3DWindow()
+app = QGuiApplication(sys.argv)
+view = QQuickView()
+view.resize(1024, 768);
+view.setResizeMode(QQuickView.SizeRootObjectToView)
+view.setSource(QUrl("main.qml"))
+view.show()
 
-scene = createScene()
+
+# This fails with AttributeError: 'QQuickItem' object has no attribute 'show'
+#engine = QQmlApplicationEngine()
+#engine.load(QUrl("main.qml"))
+#engine.rootObjects()[0].show()
+
+
+#view = Qt3DWindow()
+
+#container = QWidget.createWindowContainer(view)
+#container.show()
+
+#scene = createScene()
 
 # camera
-camera = view.camera()
-camera.lens().setPerspectiveProjection(45.0, 16.0/9.0, 0.1, 1000)
-camera.setPosition(QVector3D(0, 0, 40))
-camera.setViewCenter(QVector3D(0, 0, 0))
+#camera = view.camera()
+#camera.lens().setPerspectiveProjection(45.0, 16.0/9.0, 0.1, 1000)
+#camera.setPosition(QVector3D(0, 0, 40))
+#camera.setViewCenter(QVector3D(0, 0, 0))
 
 # for camera control
 #camController = QOrbitCameraController(scene)
@@ -142,7 +155,8 @@ camera.setViewCenter(QVector3D(0, 0, 0))
 #camController.setLookSpeed( 180.0 )
 #camController.setCamera(camera)
 
-view.setRootEntity(scene)
-view.show()
+#view.setRootEntity(scene)
+#view.show()
 
 sys.exit(app.exec_())
+
